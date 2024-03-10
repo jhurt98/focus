@@ -17,5 +17,8 @@
 # Go workspace file
 go.work
 
+# binaries, should probly create a separate bin folder
 ./server/Server
 Server
+server
+focus
