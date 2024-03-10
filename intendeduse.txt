@@ -1,0 +1,1 @@
+focus [option: blockSite, expect arg for block] [--proxy flag by default checks firefox settings, updates, launches proxy]
