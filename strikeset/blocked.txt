@@ -3,3 +3,4 @@ youtube.com
 instagram.com
 icanhazip.com
 (.*)\.twitch.tv
+twitter.com

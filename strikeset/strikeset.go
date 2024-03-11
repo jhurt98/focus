@@ -6,15 +6,29 @@ import (
     "regexp"
 )
 
+var dir string = "./strikeset/blocked.txt"
+
 type Strikeset struct {
     Domains []*regexp.Regexp
 }
 
-func (ss *Strikeset) AddToStrikeset(dir string) {
+func AddToBlockedFile(site string) {
+    file, err := os.OpenFile(dir, os.O_APPEND | os.O_WRONLY | os.O_CREATE, 0644)
+    check(err)
+
+    _, err = file.WriteString(site)
+    check(err)
+
+    _, err = file.WriteString("\n")
+    check(err)
+
+    check(file.Close())
+}
+
+func (ss *Strikeset) AddToStrikeset() {
     file, err := os.Open(dir)
-    if err != nil {
-        panic(err)
-    }
+    check(err)
+
     defer file.Close()
     scanner := bufio.NewScanner(file)
 
@@ -39,4 +53,10 @@ func (ss *Strikeset) SiteIsAllowed(site string) bool {
 func getRegExp(word string) *regexp.Regexp{
     r, _ := regexp.Compile(word)
     return r;
+}
+
+func check(e error) {
+    if e != nil {
+        panic(e)
+    }
 }
