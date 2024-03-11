@@ -20,6 +20,7 @@ func handleSSCommand(ssCommand *flag.FlagSet, ssAddSite *string, ssRemoveSite *s
     }
 
     if *ssRemoveSite != "" {
+        strikeset.RemoveFromBlockedFile(*ssRemoveSite)
     }
 }
 

@@ -1,6 +1,7 @@
 package strikeset
 
 import ( 
+    "fmt"
     "os"
     "bufio"
     "regexp"
@@ -23,6 +24,45 @@ func AddToBlockedFile(site string) {
     check(err)
 
     check(file.Close())
+}
+
+func RemoveFromBlockedFile(site string) {
+     count := 0
+     var lines []string
+
+     file, err := os.Open(dir)
+     check(err)
+
+     defer file.Close()
+     scanner := bufio.NewScanner(file)
+
+     var line string
+     for scanner.Scan() {
+         line = scanner.Text()
+         if line == site {
+             count++
+             continue
+         } else {
+             lines = append(lines, line)
+         }
+     }
+     check(scanner.Err())
+
+     if count == 0 {
+         fmt.Printf("blocked.txt did not contain %v\n", site)
+         return
+     }
+
+     err = os.Truncate(dir, 0)
+     check(err)
+     file, err = os.Create(dir)
+     check(err)
+     for _, line := range(lines) {
+         _, err = file.WriteString(line)
+         check(err)
+         _, err = file.WriteString("\n")
+         check(err)
+     }
 }
 
 func (ss *Strikeset) AddToStrikeset() {

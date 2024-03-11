@@ -1,6 +1,5 @@
-twitch.tv
-youtube.com
-instagram.com
-icanhazip.com
-(.*)\.twitch.tv
 twitter.com
+reddit.com
+facebook.com
+myspace.com
+myspace.com
