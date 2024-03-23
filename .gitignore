@@ -18,7 +18,8 @@
 go.work
 
 # binaries, should probly create a separate bin folder
-./server/Server
-Server
-server
+/server/Server
 focus
+
+!/*.go
+!.gitignore

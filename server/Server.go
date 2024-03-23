@@ -19,11 +19,6 @@ func serviceRequest(w http.ResponseWriter, req *http.Request) {
     log.Printf("target host: %v\n", req.Host)
     log.Printf("request : %v\n", req)
 
-    if !ss.SiteIsAllowed(req.Host) {
-        w.WriteHeader(http.StatusForbidden)
-        return 
-    }
-
     if req.RequestURI[0] == '/' {
         fmt.Fprintf(w, "proxy boi")
         return
@@ -42,13 +37,14 @@ func handleHTTP(w http.ResponseWriter, req *http.Request) {
     if !ss.SiteIsAllowed(req.Host) {
         w.WriteHeader(http.StatusForbidden)
         fmt.Fprintf(w, "get to work")
-        fmt.Println("method is properly being called in not opperator ifstatmemtn")
         return
     }
+
     res, err := http.DefaultTransport.RoundTrip(req)
     if err != nil {
         panic(err)
     }
+
     defer res.Body.Close()
     copyHeader(w.Header(), res.Header)
     w.WriteHeader(res.StatusCode)
@@ -61,6 +57,7 @@ func handleCONNECTRequest(w http.ResponseWriter, req *http.Request) {
         w.WriteHeader(http.StatusForbidden)
         return 
     }
+
     targetConn, err := net.Dial("tcp", req.Host)
     if err != nil {
         log.Printf("woah woah something went wrong with dialing %v\n", req.Host)
@@ -80,7 +77,6 @@ func handleCONNECTRequest(w http.ResponseWriter, req *http.Request) {
         log.Fatal("failed to hijack")
     }
 
-    log.Print("we got a tunnel fam!")
     go tunnel(targetConn, clientCnxn)
     go tunnel(clientCnxn, targetConn)
 }
@@ -91,8 +87,6 @@ func tunnel(dst io.WriteCloser, src io.ReadCloser) {
     src.Close()
 }
 
-func blockTunnel() {
-}
 func copyHeader(dst, src http.Header) {
     for name, values := range src {
         for _, value := range values {
@@ -103,12 +97,13 @@ func copyHeader(dst, src http.Header) {
 
 func startProxy() {
     ss = strikeset.Strikeset{}
-    ss.AddToStrikeset("./blocked.txt")
+    ss.AddToStrikeset()
     fmt.Printf("strikeset blocking: %v", ss.Domains)
     server := http.Server {
         Addr: ":2002",
         Handler: http.HandlerFunc(serviceRequest),
     }
+
     log.Printf("server listening on port: %v, pid: %v\n", server.Addr, os.Getpid())
 
     ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
