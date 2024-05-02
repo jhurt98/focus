@@ -5,14 +5,10 @@ import (
     "fmt"
     "os"
     "jhurt/focus_proxy/strikeset"
+    "jhurt/focus_proxy/server"
 )
 
 func handleSSCommand(ssCommand *flag.FlagSet, ssAddSite *string, ssRemoveSite *string, ssStart *bool) {
-    if os.Args[1] != "ss" {
-        fmt.Printf("%v is not a valid subcommand\n", os.Args[1])
-        os.Exit(1)
-    }
-
     ssCommand.Parse(os.Args[2:])
 
     if *ssAddSite != "" {
@@ -22,6 +18,15 @@ func handleSSCommand(ssCommand *flag.FlagSet, ssAddSite *string, ssRemoveSite *s
     if *ssRemoveSite != "" {
         strikeset.RemoveFromBlockedFile(*ssRemoveSite)
     }
+
+    if *ssStart { 
+        proxy.StartProxy()
+    }
+}
+
+func handleStartCommand(startCommand *flag.FlagSet) {
+    startCommand.Parse(os.Args[2:])
+    proxy.StartProxy()
 }
 
 func main() {
@@ -31,10 +36,27 @@ func main() {
     ssStart := ssCommand.Bool("start", false, "start after editing strikeset")
     
 
+    startCommand := flag.NewFlagSet("start", flag.ExitOnError)
+    startCommandTimer := startCommand.Int("time", 0,"set timer for proxy")
+    fmt.Println(startCommandTimer)
+
+
     if len(os.Args) < 2 {
-        // start proxy normally
-    } else {
+        fmt.Println("expected 'ss' 'start' or 'config'")
+        os.Exit(1)
+    }
+
+    switch os.Args[1] {
+
+    case "ss":
         handleSSCommand(ssCommand, ssAddSite, ssRemoveSite, ssStart)
+        return
+    case "start":
+        handleStartCommand(startCommand)
+        return
+    default:
+        fmt.Println("expected ss or start command")
+        os.Exit(1)
     }
 
 }
