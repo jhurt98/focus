@@ -95,7 +95,7 @@ func copyHeader(dst, src http.Header) {
     }
 }
 
-func startProxy() {
+func StartProxy() {
     ss = strikeset.Strikeset{}
     ss.AddToStrikeset()
     fmt.Printf("strikeset blocking: %v", ss.Domains)
@@ -119,6 +119,6 @@ func startProxy() {
 
     <-ctx.Done()
     if err := server.Shutdown(ctx); err != nil {
-        log.Fatal("server shutdown fail")
+        log.Fatal("server shutdown fail", err)
     }
 }
