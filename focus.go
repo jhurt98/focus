@@ -37,9 +37,6 @@ func main() {
     
 
     startCommand := flag.NewFlagSet("start", flag.ExitOnError)
-    startCommandTimer := startCommand.Int("time", 0,"set timer for proxy")
-    fmt.Println(startCommandTimer)
-
 
     if len(os.Args) < 2 {
         fmt.Println("expected 'ss' 'start' or 'config'")

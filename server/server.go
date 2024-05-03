@@ -2,7 +2,6 @@ package proxy
 
 import (
     "fmt"
-    "net"
     "net/http"
     "log"
     "context"
@@ -10,6 +9,7 @@ import (
     "syscall"
     "os"
     "io"
+    "net"
     "jhurt/focus_proxy/strikeset"
 )
 
@@ -54,10 +54,20 @@ func handleHTTP(w http.ResponseWriter, req *http.Request) {
 
 func handleCONNECTRequest(w http.ResponseWriter, req *http.Request) {
     if !ss.SiteIsAllowed(req.Host) {
-        w.WriteHeader(http.StatusForbidden)
+        handleBlockedHttps(w, req)
         return 
     }
+    handleSafeHttps(w, req)
 
+}
+
+func handleBlockedHttps(w http.ResponseWriter, req *http.Request) {
+    caCertFile, caKeyFile := GetCertAndKeyFiles()
+    mitm := CreateMitmProxy(caCertFile, caKeyFile) 
+    mitm.HandleTLS(w, req)
+}
+
+func handleSafeHttps(w http.ResponseWriter, req *http.Request) {
     targetConn, err := net.Dial("tcp", req.Host)
     if err != nil {
         log.Printf("woah woah something went wrong with dialing %v\n", req.Host)
