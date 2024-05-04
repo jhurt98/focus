@@ -47,8 +47,8 @@ func main() {
     
 
     startCommand := flag.NewFlagSet("start", flag.ExitOnError)
-    startTimer := startCommand.Int("settimer", -1, "set timer in minutes")
-    startPort := startCommand.Int("setport", 2002, "set port number")
+    startTimer := startCommand.Int("t", -1, "set timer in minutes")
+    startPort := startCommand.Int("p", 2002, "set port number")
 
     if len(os.Args) < 2 {
         fmt.Println("expected 'ss' 'start' or 'config'")
