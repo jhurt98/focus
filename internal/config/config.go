@@ -1,18 +1,18 @@
 package config
 import (
-    "fmt"
     "os"
+    "time"
     "encoding/json"
     "strconv"
 )
 
 type Config struct {
     Port string 
-    Time int
+    Time time.Duration 
 }
 
 var DefaultPort = 20002
-var DefaultTime = -1
+var DefaultTime time.Duration  = -1
 
 var configJsonFile = "./internal/config/config.json"
 
@@ -57,33 +57,29 @@ func parsePort(data map[string]interface{}) string {
     return buildPortString(portNumber) 
 }
 
-func parseTime(data map[string]interface{}) int {
+func parseTime(data map[string]interface{}) time.Duration {
     if v,in := data["time"]; in {
         vF, ok := v.(float64)
         if ok {
-            return int(vF)
+            return time.Duration(int(vF))
         }
     }
     return DefaultTime
 }
 
-func WritePortNumber(number float64) {
-    jsonBytes, err := os.ReadFile(configJsonFile)
-    check(err)
+func SetPortNumber(number int) {
+    if MainConfig == nil {
+        panic("config has not been initialized appropriately")
+    }
 
-    var data map[string]interface{}
-
-    err = json.Unmarshal(jsonBytes, &data)
-    check(err)
-
-    data["port"] = number
-    res,err := json.Marshal(data)
-    check(err)
-
-    fmt.Printf("resulted marshalled json %s\n", res)
+    MainConfig.Port = buildPortString(number)
 }
 
-func WriteTime() {
+func SetTimeout(timeout int) {
+    if MainConfig == nil {
+        panic("config has not been initialized appropriately")
+    }
+    MainConfig.Time = time.Duration(timeout)
 }
 
 func check(e error) {

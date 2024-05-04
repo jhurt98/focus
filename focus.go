@@ -25,9 +25,17 @@ func handleSSCommand(ssCommand *flag.FlagSet, ssAddSite *string, ssRemoveSite *s
     }
 }
 
-func handleStartCommand(startCommand *flag.FlagSet) {
+func handleStartCommand(startCommand *flag.FlagSet, startTimer *int, startPort *int) {
     startCommand.Parse(os.Args[2:])
     config.Init()
+
+    if *startTimer != -1 {
+        config.SetTimeout(*startTimer)
+    }
+    
+    if *startPort != 2002 {
+        config.SetPortNumber(*startPort)
+    }
     proxy.StartProxy()
 }
 
@@ -39,6 +47,8 @@ func main() {
     
 
     startCommand := flag.NewFlagSet("start", flag.ExitOnError)
+    startTimer := startCommand.Int("settimer", -1, "set timer in minutes")
+    startPort := startCommand.Int("setport", 2002, "set port number")
 
     if len(os.Args) < 2 {
         fmt.Println("expected 'ss' 'start' or 'config'")
@@ -51,7 +61,7 @@ func main() {
         handleSSCommand(ssCommand, ssAddSite, ssRemoveSite, ssStart)
         return
     case "start":
-        handleStartCommand(startCommand)
+        handleStartCommand(startCommand, startTimer, startPort)
         return
     default:
         fmt.Println("expected ss or start command")

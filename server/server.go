@@ -10,6 +10,7 @@ import (
     "os"
     "io"
     "net"
+    "time"
     "jhurt/focus_proxy/internal/strikeset"
     "jhurt/focus_proxy/internal/config"
 )
@@ -17,11 +18,8 @@ import (
 var ss strikeset.Strikeset
 
 func serviceRequest(w http.ResponseWriter, req *http.Request) {
-    log.Printf("target host: %v\n", req.Host)
-    log.Printf("request : %v\n", req)
-
     if req.RequestURI[0] == '/' {
-        fmt.Fprintf(w, "proxy boi")
+        fmt.Fprintf(w, "proxy")
         return
     }
 
@@ -50,7 +48,6 @@ func handleHTTP(w http.ResponseWriter, req *http.Request) {
     copyHeader(w.Header(), res.Header)
     w.WriteHeader(res.StatusCode)
     io.Copy(w, res.Body)
-    log.Printf("get: %v\n", res.Body)
 }
 
 func handleCONNECTRequest(w http.ResponseWriter, req *http.Request) {
@@ -109,10 +106,12 @@ func copyHeader(dst, src http.Header) {
 func StartProxy() {
     ss = strikeset.Strikeset{}
     ss.LoadStrikeset()
-    fmt.Printf("strikeset blocking: %v", ss.Domains)
+
+    port    := config.MainConfig.Port
+    timeOut := config.MainConfig.Time
 
     server := http.Server {
-        Addr: config.MainConfig.Port,
+        Addr: port,
         Handler: http.HandlerFunc(serviceRequest),
     }
 
@@ -122,6 +121,13 @@ func StartProxy() {
 
     defer cancel()
 
+    timer := time.NewTimer(timeOut*time.Minute)
+    if timeOut == -1 {
+        if !timer.Stop() {
+            <-timer.C
+        }
+    }
+
     go func() {
         err := server.ListenAndServe()
         if err != nil && err != http.ErrServerClosed{
@@ -129,7 +135,14 @@ func StartProxy() {
         }
     }()
 
-    <-ctx.Done()
+    select {
+    case <-timer.C:
+        log.Println("timer went off")
+        cancel()
+    case <-ctx.Done():
+        cancel()
+    }
+
     if err := server.Shutdown(ctx); err != nil {
         log.Fatal("server shutdown fail", err)
     }
