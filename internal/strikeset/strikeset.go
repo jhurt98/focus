@@ -7,7 +7,7 @@ import (
     "regexp"
 )
 
-var dir string = "./strikeset/blocked.txt"
+var dir string = "./internal/strikeset/blocked.txt"
 
 type Strikeset struct {
     Domains []*regexp.Regexp
