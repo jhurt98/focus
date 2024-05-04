@@ -10,7 +10,7 @@ import (
     "os"
     "io"
     "net"
-    "jhurt/focus_proxy/strikeset"
+    "jhurt/focus_proxy/internal/strikeset"
 )
 
 var ss strikeset.Strikeset
@@ -107,7 +107,7 @@ func copyHeader(dst, src http.Header) {
 
 func StartProxy() {
     ss = strikeset.Strikeset{}
-    ss.AddToStrikeset()
+    ss.LoadStrikeset()
     fmt.Printf("strikeset blocking: %v", ss.Domains)
     server := http.Server {
         Addr: ":2002",
@@ -132,3 +132,4 @@ func StartProxy() {
         log.Fatal("server shutdown fail", err)
     }
 }
+

@@ -65,7 +65,7 @@ func RemoveFromBlockedFile(site string) {
      }
 }
 
-func (ss *Strikeset) AddToStrikeset() {
+func (ss *Strikeset) LoadStrikeset() {
     file, err := os.Open(dir)
     check(err)
 
