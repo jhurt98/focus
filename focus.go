@@ -4,7 +4,7 @@ import (
     "flag"
     "fmt"
     "os"
-    "jhurt/focus_proxy/strikeset"
+    "jhurt/focus_proxy/internal/strikeset"
     "jhurt/focus_proxy/server"
 )
 
