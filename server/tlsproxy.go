@@ -177,7 +177,6 @@ func (p *MitmProxy) HandleTLS(w http.ResponseWriter, proxyReq *http.Request) {
 	tlsConn := tls.Server(clientConn, tlsConfig)
 	defer tlsConn.Close()
 
-    log.Println("what is happening")
     tlsConn.Write([]byte("blocked\n"))
     return
 }
