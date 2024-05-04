@@ -5,6 +5,7 @@ import (
     "fmt"
     "os"
     "jhurt/focus_proxy/internal/strikeset"
+    "jhurt/focus_proxy/internal/config"
     "jhurt/focus_proxy/server"
 )
 
@@ -26,6 +27,7 @@ func handleSSCommand(ssCommand *flag.FlagSet, ssAddSite *string, ssRemoveSite *s
 
 func handleStartCommand(startCommand *flag.FlagSet) {
     startCommand.Parse(os.Args[2:])
+    config.Init()
     proxy.StartProxy()
 }
 

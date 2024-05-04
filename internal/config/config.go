@@ -7,8 +7,8 @@ import (
 )
 
 type Config struct {
-    port string 
-    time int
+    Port string 
+    Time int
 }
 
 var DefaultPort = 20002
@@ -30,8 +30,8 @@ func buildConfig() *Config {
 
 func (config *Config) setValuesWithJson() {
     data := readConfigJson()
-    config.port = parsePort(data)
-    config.time = parseTime(data)
+    config.Port = parsePort(data)
+    config.Time = parseTime(data)
 }
 
 func readConfigJson() map[string]interface{} {

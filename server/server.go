@@ -11,6 +11,7 @@ import (
     "io"
     "net"
     "jhurt/focus_proxy/internal/strikeset"
+    "jhurt/focus_proxy/internal/config"
 )
 
 var ss strikeset.Strikeset
@@ -109,8 +110,9 @@ func StartProxy() {
     ss = strikeset.Strikeset{}
     ss.LoadStrikeset()
     fmt.Printf("strikeset blocking: %v", ss.Domains)
+
     server := http.Server {
-        Addr: ":2002",
+        Addr: config.MainConfig.Port,
         Handler: http.HandlerFunc(serviceRequest),
     }
 
