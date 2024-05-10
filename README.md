@@ -3,13 +3,18 @@ Focus CLI Proxy
 CLI Tool that starts a proxy to block connections to specified sites
 
 Commands:
+
 "focus start": starts a proxy server at default port number until terminated by C-c
+
 --> optional flags:
+
     --> "-t" sets a timeout in minutes for the current server session
     --> "-p" sets a custom port number for the current server session
 
 "focus ss": command to edit the strikeset file for blocked sites/domains
+
 --> flags:
+
     --> "addSite" adds a site to the file
     --> "removeSite" removes a site to the file if it exists
 
